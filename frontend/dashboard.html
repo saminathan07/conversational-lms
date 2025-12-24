@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Conversational LMS</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🔐 Conversational LMS</div>
+        <div class="nav-menu">
+            <span id="user-name">User</span>
+            <button id="logout-btn" class="btn-secondary">Logout</button>
+        </div>
+    </nav>
+    
+    <div class="dashboard-container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Questions</h3>
+                <p class="stat-value" id="total-questions">0</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Accuracy</h3>
+                <p class="stat-value" id="accuracy">0%</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Current Difficulty</h3>
+                <p class="stat-value" id="difficulty">1.0</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Current Streak</h3>
+                <p class="stat-value" id="streak">0</p>
+            </div>
+        </div>
+        
+        <div class="action-section">
+            <h2>Choose a Topic</h2>
+            <div class="topics-grid" id="topics-grid">
+                <button class="topic-btn" data-topic="phishing_detection">🎣 Phishing Detection</button>
+                <button class="topic-btn" data-topic="password_security">🔑 Password Security</button>
+                <button class="topic-btn" data-topic="malware_awareness">🦠 Malware Awareness</button>
+                <button class="topic-btn" data-topic="social_engineering">👤 Social Engineering</button>
+                <button class="topic-btn" data-topic="network_security">🌐 Network Security</button>
+                <button class="topic-btn" data-topic="data_encryption">🔒 Data Encryption</button>
+            </div>
+        </div>
+        
+        <div class="progress-section">
+            <h2>Recent Performance</h2>
+            <div id="performance-chart">
+                <p class="loading">Loading analytics...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script>
+        // Load dashboard data
+        async function loadDashboard() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            try {
+                const user = await api.get('/auth/me');
+                document.getElementById('user-name').textContent = user.username;
+                document.getElementById('total-questions').textContent = user.total_questions;
+                document.getElementById('accuracy').textContent = 
+                    user.total_questions > 0 
+                        ? ((user.correct_answers / user.total_questions) * 100).toFixed(1) + '%'
+                        : '0%';
+                document.getElementById('difficulty').textContent = user.current_difficulty.toFixed(1);
+                document.getElementById('streak').textContent = user.correct_streak;
+                
+                // Load analytics
+                const analytics = await api.get('/analytics/performance');
+                if (analytics.total_questions > 0) {
+                    const correctCount = Math.round(analytics.total_questions * analytics.accuracy / 100);
+                    const incorrectCount = analytics.total_questions - correctCount;
+                    
+                    document.getElementById('performance-chart').innerHTML = `
+                        <div class="analytics-summary">
+                            <p>✅ Correct: ${correctCount}</p>
+                            <p>❌ Incorrect: ${incorrectCount}</p>
+                            <p>📊 Average Difficulty: ${analytics.average_difficulty.toFixed(1)}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                localStorage.removeItem('token');
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Topic selection
+        document.getElementById('topics-grid').addEventListener('click', (e) => {
+            if (e.target.classList.contains('topic-btn')) {
+                const topic = e.target.dataset.topic;
+                localStorage.setItem('selected-topic', topic);
+                window.location.href = 'chat.html';
+            }
+        });
+        
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        });
+        
+        loadDashboard();
+    </script>
+</body>
+</html>

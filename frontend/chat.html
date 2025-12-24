@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Chat - Conversational LMS</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">🔐 Conversational LMS</div>
+        <div class="nav-menu">
+            <a href="dashboard.html" class="btn-secondary">← Dashboard</a>
+        </div>
+    </nav>
+    
+    <div class="chat-container">
+        <div class="chat-sidebar">
+            <div class="sidebar-stats">
+                <h3>Your Progress</h3>
+                <div class="stat-item">
+                    <span>Difficulty:</span>
+                    <span id="current-difficulty">1.0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Streak:</span>
+                    <span id="current-streak">0 🔥</span>
+                </div>
+                <div class="stat-item">
+                    <span>Topic:</span>
+                    <span id="current-topic">General</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-main">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    <p>👋 Welcome! I'm your AI cybersecurity tutor. Ready to start learning?</p>
+                    <button class="btn-primary start-btn" id="start-btn">Start Learning</button>
+                </div>
+            </div>
+            
+            <div class="chat-input-container hidden" id="input-container">
+                <textarea 
+                    id="answer-input" 
+                    placeholder="Type your answer here..."
+                    rows="3"
+                ></textarea>
+                <button id="submit-answer" class="btn-primary">Submit Answer</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/api.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/adaptive.js"></script>
+</body>
+</html>
