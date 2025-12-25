@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 
@@ -10,14 +10,14 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     question_id: Optional[int] = None
-    difficulty: float
+    difficulty: Optional[float] = None
     is_question: bool
-    topic: str
+    topic: str = "general"
 
 
 class AnswerRequest(BaseModel):
     question_id: int
-    answer: str
+    answer: str = Field(min_length=1)
 
 
 class AnswerResponse(BaseModel):

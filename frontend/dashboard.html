@@ -40,14 +40,12 @@
         </div>
         
         <div class="action-section">
-            <h2>Choose a Topic</h2>
+            <div class="section-header">
+                <h2>📝 Start Quiz Mode</h2>
+                <p class="section-subtitle">Select a topic to begin practicing with multiple-choice questions</p>
+            </div>
             <div class="topics-grid" id="topics-grid">
-                <button class="topic-btn" data-topic="phishing_detection">🎣 Phishing Detection</button>
-                <button class="topic-btn" data-topic="password_security">🔑 Password Security</button>
-                <button class="topic-btn" data-topic="malware_awareness">🦠 Malware Awareness</button>
-                <button class="topic-btn" data-topic="social_engineering">👤 Social Engineering</button>
-                <button class="topic-btn" data-topic="network_security">🌐 Network Security</button>
-                <button class="topic-btn" data-topic="data_encryption">🔒 Data Encryption</button>
+                <!-- Topics will be loaded dynamically -->
             </div>
         </div>
         
@@ -94,6 +92,9 @@
                         </div>
                     `;
                 }
+                
+                // Load available topics
+                loadTopics();
             } catch (error) {
                 console.error('Error loading dashboard:', error);
                 localStorage.removeItem('token');
@@ -101,14 +102,66 @@
             }
         }
         
-        // Topic selection
-        document.getElementById('topics-grid').addEventListener('click', (e) => {
-            if (e.target.classList.contains('topic-btn')) {
-                const topic = e.target.dataset.topic;
-                localStorage.setItem('selected-topic', topic);
-                window.location.href = 'chat.html';
+        // Load available topics
+        async function loadTopics() {
+            try {
+                const response = await api.get('/quiz/topics');
+                const topicsGrid = document.getElementById('topics-grid');
+                topicsGrid.innerHTML = '';
+                
+                response.topics.forEach(topic => {
+                    const button = document.createElement('button');
+                    button.className = 'topic-btn';
+                    button.innerHTML = `
+                        <div class="topic-icon">${topic.name.split(' ')[0]}</div>
+                        <div class="topic-info">
+                            <div class="topic-title">${topic.name}</div>
+                            <div class="topic-description">${topic.description}</div>
+                        </div>
+                    `;
+                    button.addEventListener('click', () => startQuiz(topic.id));
+                    topicsGrid.appendChild(button);
+                });
+            } catch (error) {
+                console.error('Error loading topics:', error);
+                // Use fallback topics
+                loadFallbackTopics();
             }
-        });
+        }
+        
+        // Fallback topics if API fails
+        function loadFallbackTopics() {
+            const topics = [
+                { id: "python_basics", name: "🐍 Python Basics", description: "Learn Python fundamentals" },
+                { id: "web_security", name: "🌐 Web Security", description: "Secure web development" },
+                { id: "networking", name: "📡 Networking", description: "Network fundamentals" },
+                { id: "linux_security", name: "🐧 Linux Security", description: "Linux hardening & security" },
+                { id: "cryptography", name: "🔐 Cryptography", description: "Encryption & hashing" },
+                { id: "incident_response", name: "🚨 Incident Response", description: "Handling security incidents" }
+            ];
+            
+            const topicsGrid = document.getElementById('topics-grid');
+            topicsGrid.innerHTML = '';
+            
+            topics.forEach(topic => {
+                const button = document.createElement('button');
+                button.className = 'topic-btn';
+                button.innerHTML = `
+                    <div class="topic-icon">${topic.name.split(' ')[0]}</div>
+                    <div class="topic-info">
+                        <div class="topic-title">${topic.name}</div>
+                        <div class="topic-description">${topic.description}</div>
+                    </div>
+                `;
+                button.addEventListener('click', () => startQuiz(topic.id));
+                topicsGrid.appendChild(button);
+            });
+        }
+        
+        // Start quiz for selected topic
+        function startQuiz(topicId) {
+            window.location.href = `quiz.html?topic=${topicId}`;
+        }
         
         // Logout
         document.getElementById('logout-btn').addEventListener('click', () => {

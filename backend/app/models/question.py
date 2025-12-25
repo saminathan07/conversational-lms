@@ -15,6 +15,10 @@ class Question(Base):
     correct_answer = Column(Text)
     explanation = Column(Text)
 
+    # MCQ Options stored as JSON: [{"id": 1, "text": "Option A"}, ...]
+    options = Column(JSON, nullable=True)
+    correct_option_id = Column(Integer, nullable=True)  # ID of correct option
+
     # ❌ DO NOT use "metadata"
     extra_data = Column(JSON)  # ✅ renamed
 

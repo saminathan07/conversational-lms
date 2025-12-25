@@ -7,7 +7,7 @@ from app.db.database import engine, Base
 # ✅ IMPORTANT: import models so tables create correctly
 from app.models import User, Question, Response, Progress  # noqa: F401
 
-from app.api import auth, chat, progress, analytics
+from app.api import auth, chat, progress, analytics, quiz
 
 # ✅ Create DB tables
 Base.metadata.create_all(bind=engine)
@@ -30,6 +30,7 @@ app.add_middleware(
 # ✅ Routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+app.include_router(quiz.router, prefix="/api/quiz", tags=["Quiz"])
 app.include_router(progress.router, prefix="/api/progress", tags=["Progress"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 
